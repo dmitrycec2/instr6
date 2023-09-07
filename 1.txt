@@ -1,0 +1,4 @@
+/*проверка входящей строки*/
+public boolean isValueFound(String varValue) {
+	return (varValue != null) && (!varValue.isEmpty()) && (!"NOTFOUND".equals(varValue)) && (varValue.length() > 0);
+}
