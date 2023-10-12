@@ -1,0 +1,99 @@
+
+   public String hostName="http://localhost:8086";
+   public String dataBaseName="test";
+
+def mes = "jmeter1,node=NODE1,response_code=200,application=jmeterUC1,response_message=message,thread=Thread1,transaction=UC01-01_start_page,status=pass value=224"
+String time="1622121853882000000"
+
+
+StringBuffer resultStrBuff = new StringBuffer(mes);
+resultStrBuff.append(" "+getInfluxTimeStamp(time))); 
+
+NTGeneralInfluxIntegration influxIntegration=new NTGeneralInfluxIntegration(hostName, dataBaseName);
+influxIntegration.sendInfoToInflux(resultInfo);
+
+
+
+private String getInfluxTimeStamp(String time) {
+    StringBuffer stringBufferTime = new StringBuffer(time);
+    while (stringBufferTime.length() < INFLUX_TIMESTAMP_LENGTH) {
+        stringBufferTime.append('0');
+    }
+    return stringBufferTime.toString();
+} 
+
+
+public class NTGeneralInfluxIntegration
+{
+    private static final long serialVersionUID = 99937323455676572L;
+    private String hostName;
+    private String dataBaseName;
+   
+    
+    private NTGeneralInfluxIntegration() {
+        this.hostName = "http://localhost:8086";
+        this.dataBaseName = "metricsDB";
+      
+    }
+    
+    public NTGeneralInfluxIntegration(String hostName, String dataBaseName) {
+        this.hostName = getValidHost(hostName);
+        this.dataBaseName = getValidParam(dataBaseName);
+    }
+    
+
+    
+    public void sendInfoToInflux( List<String> resultInfo) throws Exception {
+        final String influxURL = this.hostName + "/write?db=" + this.dataBaseName;
+       
+
+        int responseCode;
+
+        for(String requestBody:resultInfo) {
+	        try {     
+	            final HttpURLConnection influxPost = (HttpURLConnection)new URL(influxURL).openConnection();
+	            influxPost.setRequestMethod("POST");
+	            influxPost.setDoOutput(true);
+	            influxPost.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+	            System.out.println(influxURL);
+	            System.out.println(requestBody);
+	            influxPost.getOutputStream().write(requestBody.getBytes(StandardCharsets.UTF_8));
+	            responseCode = influxPost.getResponseCode();
+	        }
+	        catch (IOException ioEx) {
+	            throw new Exception("Influx write data ERROR: " + ioEx.toString() + " || URL: " + influxURL + " || requestBody: " + requestBody);
+	        }
+	        if (responseCode != 204) {
+	            throw new Exception("Influx write data ERROR: invalid response! || response code: " + responseCode + " || URL: " + influxURL + " || requestBody: " + requestBody);
+	        }
+        }
+    }
+    
+
+    
+
+    
+    public boolean isValid() {
+        if (this.hostName.isEmpty() || this.dataBaseName.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+    
+    private static String getValidHost(String hostName) {
+        if (hostName == null || hostName.isEmpty()) {
+            return "";
+        }
+        hostName = hostName.trim();
+        final int lastElemIndex = hostName.length() - 1;
+        if ("/".equals(hostName.substring(lastElemIndex)) || "\\".equals(hostName.substring(lastElemIndex))) {
+            hostName = getValidHost(hostName.substring(0, lastElemIndex));
+        }
+        return hostName;
+    }
+    
+    // avoid nulls and extra spaces in parameters
+    private String getValidParam(String value) {
+        return (value == null || value.isEmpty()) ? "" : value.trim().replace(' ', '_');
+    }
+}
