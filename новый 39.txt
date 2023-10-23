@@ -97,3 +97,6 @@ public class NTGeneralInfluxIntegration
         return (value == null || value.isEmpty()) ? "" : value.trim().replace(' ', '_');
     }
 }
+
+
+https://disk.yandex.lt/i/IahpywX6EIpVjQ
