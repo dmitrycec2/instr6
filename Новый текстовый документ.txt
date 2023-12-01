@@ -1,0 +1,49 @@
+	private static class ListInfo
+    implements HttpHandler
+  {
+    public void handle(HttpExchange he)
+      throws IOException
+    {
+      String response = "";
+      Integer cursize = Integer.valueOf(0);
+      
+      JSONObject obj = new JSONObject();
+      for (Iterator localIterator = HTTPserver.listMap.entrySet().iterator(); localIterator.hasNext();)
+      {
+          Map.Entry queue = (Map.Entry)localIterator.next();
+        if (queue != null)
+        {
+          cursize = Integer.valueOf(((BlockingQueue)queue.getValue()).size());
+          obj.put(queue.getKey().toString(), cursize.toString());
+       
+        }
+      }
+      he.sendResponseHeaders(200, response == null ? 0L : response.length());
+      OutputStream os = he.getResponseBody();Map.Entry<String, BlockingQueue> queue = null;
+      try
+      {
+        os.write(obj.toJSONString().getBytes());
+      }
+      catch (Throwable localThrowable1)
+      {
+        
+      }
+      finally
+      {
+        if (os != null) {
+          if (queue != null) {
+            try
+            {
+              os.close();
+            }
+            catch (Throwable localThrowable2)
+            {
+              
+            }
+          } else {
+            os.close();
+          }
+        }
+      }
+    }
+  }
