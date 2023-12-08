@@ -1,0 +1,22 @@
+
+docker load -i grafana.tar
+docker-compose up
+или
+docker run --rm -p 8081:8081 grafana/grafana-image-renderer:latest
+docker run --rm \
+-e GF_RENDERING_SERVER_URL='http://192.168.172.128:8081/render' \
+-e GF_RENDERING_CALLBACK_URL='http://192.168.172.128:3000/' \
+-e GF_LOG_FILTERS='rendering:debug' \
+-p 3000:3000 mygrafana/grafana:latest
+
+
+где 192.168.172.128 - адрес хоста с докером
+
+# Example build line
+docker run -p 8081:8081 grafana/grafana-image-renderer:latest &
+docker run \
+-e GF_RENDERING_SERVER_URL='http://10.153.253.10:8081/render' \
+-e GF_RENDERING_CALLBACK_URL='http://10.153.253.10:3000/' \
+-e GF_LOG_FILTERS='rendering:debug' \
+-p 3000:3000 mygrafana/grafana:latest
+
