@@ -1,0 +1,3 @@
+https://stackoverflow.com/questions/25981703/pip-install-fails-with-connection-error-ssl-certificate-verify-failed-certi
+https://packaging.python.org/en/latest/guides/hosting-your-own-index/
+https://stackoverflow.com/questions/18052217/how-can-i-create-a-local-own-pypi-repository-index-without-a-mirror
